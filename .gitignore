@@ -1,0 +1,4 @@
+_build/
+*.swp
+lib/version.ml
+.merlin

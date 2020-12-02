@@ -1,0 +1,24 @@
+
+# https://blog.danny-willems.be/ocaml-raspberry-pi/
+
+$ sudo apt-get install ocaml m4
+
+# opam
+
+$ cd ~/Downloads
+$ git clone https://github.com/ocaml/opam
+$ cd opam
+$ ./configure
+$ make lib-ext
+$ nice make
+$ sudo make install
+$ nice opam init
+
+$ nice opam switch install 4.10.0+musl+static+flambda
+
+# https://www.systutorials.com/how-to-statically-link-ocaml-programs/
+# via https://discuss.ocaml.org/t/statically-link/1464/13
+# $ fgrep -- '--disable-shared' ~/.opam/repo/default/packages/ocaml-variants/ocaml-variants.4.??.?+musl+static+flambda/opam
+# https://github.com/ocaml/opam-repository/commit/87bc3c71
+
+$ nice opam install --yes dune angstrom
