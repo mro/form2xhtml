@@ -11,7 +11,10 @@ build:
 
 all: build
 
-test:
+test/assert.ml:
+	curl --location --output $@ https://raw.githubusercontent.com/benjenkinsv95/ocaml-unit-testing-helpers/master/assert.ml
+
+test: test/assert.ml
 	dune runtest
 
 examples:

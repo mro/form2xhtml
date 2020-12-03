@@ -29,7 +29,11 @@ let () =
   ( match Sys.argv |> Array.to_list |> List.tl with
   | [ "-h" ] | [ "--help" ] -> print_help ()
   | [ "-v" ] | [ "--version" ] -> print_version ()
-  | [ pre ] -> pre |> Lib.Process.run
-  | [] -> "./" |> Lib.Process.run
+  | [ pre ] ->
+      pre |> Lib.Rfc2388.process stdin;
+      0
+  | [] ->
+      "./" |> Lib.Rfc2388.process stdin;
+      0
   | _ -> err 2 [ "get help with -h" ] )
   |> exit

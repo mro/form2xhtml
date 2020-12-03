@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns="http://usefulinc.com/ns/doap#">
+  <Project>
+    <name>form2xml</name>
+    <shortdesc xml:lang="en">
+🐫 ✂️ extract multipart/form-data dumps (RFC2388) to html (xml).
+    </shortdesc>
+    <homepage rdf:resource="https://mro.name/form2xml"/>
+    <programming-language>OCaml</programming-language>
+    <bug-database rdf:resource="https://code.mro.name/mro/form2xml/issues"/>
+    <maintainer rdf:resource="https://code.mro.name/mro"/>
+    <description xml:lang="en">
+Convert HTTP multipart/form-data RFC 2388 POST dumps into xml for e.g. Atom RFC 4287.
+
+See
+
+* https://tools.ietf.org/html/rfc2388
+* https://ec.haxx.se/http/http-multipart
+* https://tools.ietf.org/html/rfc4287
+
+Synopsis
+
+$ form2xml -h
+$ form2xml -v
+$ form2xml [enclosure prefix] &lt; source.dump &gt; target.xml
+    </description>
+    <repository>
+      <GitRepository>
+        <browse rdf:resource="https://code.mro.name/mro/form2xml"/>
+        <location rdf:resource="https://code.mro.name/mro/form2xml.git"/>
+      </GitRepository>
+    </repository>
+<!--
+    <repository>
+      <GitRepository>
+        <browse rdf:resource="https://github.com/mro/form2xml"/>
+      </GitRepository>
+    </repository>
+    <repository>
+      <GitRepository>
+        <browse rdf:resource="https://gitlab.com/mro/form2xml"/>
+      </GitRepository>
+    </repository>
+    <repository>
+      <GitRepository>
+        <browse rdf:resource="https://notabug.org/mro/form2xml"/>
+      </GitRepository>
+    </repository>
+-->
+    <repository>
+      <GitRepository>
+        <browse rdf:resource="https://codeberg.org/mro/form2xml"/>
+      </GitRepository>
+    </repository>
+<!--
+    <repository>
+      <GitRepository>
+        <browse rdf:resource="https://repo.or.cz/form2xml.git"/>
+      </GitRepository>
+    </repository>
+-->
+  </Project>
+</rdf:RDF>

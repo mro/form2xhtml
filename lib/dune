@@ -1,7 +1,10 @@
 (library
   (name Lib)
   (libraries
-    angstrom
+;    angstrom
+;    multipart_form
+;    https://github.com/lemaetech/http-multipart-formdata
+    tyre
   )
 )
 
