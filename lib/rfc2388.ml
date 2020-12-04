@@ -49,17 +49,8 @@ let copy_channel boundary ic oc =
         let ch = ic |> input_char in
         match ch = boundary.[back] with
         | false ->
-            (* hope the boundary has no xml entities *)
             output_substring oc boundary 0 back;
-            ( match ch with
-            (* do not escape for now
-               | '>' -> "&gt;" |> output_string oc
-               | '<' -> "&lt;" |> output_string oc
-               | '&' -> "&amp;" |> output_string oc
-               | '"' -> "&quot;" |> output_string oc
-               | '\'' -> "&apos;" |> output_string oc
-            *)
-            | ch -> ch |> output_char oc );
+            ch |> output_char oc;
             cp 0
         | true -> cp (1 + back) )
   in
@@ -69,6 +60,7 @@ type meta = { name : string; filename : string option; mime : string option }
 
 let process ic prefix =
   match ic |> input_line |> parse_boundary with
+  | Error _ -> Printf.eprintf "error: Not a boundary"
   | Ok bou' ->
       let boundary = "\r\n" ^ "--" ^ bou' in
       let rec parse_header r' =
@@ -111,9 +103,11 @@ let process ic prefix =
               mim n fn;
             copy_file fn
         | Ok { name = n; filename = None; mime = None } ->
-            Printf.printf "  <textarea name=\"%s\">" n;
+            (* CDATA isn't a solution for escaping but rather a mitigation.
+             * Works until the payload contains the literal ']]>' *)
+            Printf.printf "  <textarea name=\"%s\"><![CDATA[" n;
             let _ = copy_channel boundary ic stdout in
-            Printf.printf "</textarea>\n"
+            Printf.printf "]]></textarea>\n"
         | _ -> Printf.eprintf "error: unexpected part header" );
         match ic |> input_line with
         | "\r" -> scan_part (depth + 1)
@@ -123,4 +117,3 @@ let process ic prefix =
       Printf.printf "<form>\n";
       scan_part 0;
       Printf.printf "</form>\n"
-  | Error _ -> Printf.eprintf "error: Not a boundary"
