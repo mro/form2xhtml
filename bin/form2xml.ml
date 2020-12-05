@@ -20,7 +20,8 @@ let print_help () =
      SYNOPSIS\n\n\
      $ form2xml -h\n\
      $ form2xml -v\n\
-     $ form2xml [enclosure prefix] < source.dump > target.xml\n\n"
+     $ form2xml [enclosure prefix] < source.dump > target.xml\n\
+     $ form2xml /dev/null < source.dump > target.xml\n\n"
   in
   Printf.printf "%s\n" msg;
   0

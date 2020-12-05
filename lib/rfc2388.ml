@@ -86,10 +86,13 @@ let process ic prefix =
                 r' )
       in
       let copy_file fn =
-        prefix ^ fn
-        |> open_out_gen
-             [ Open_wronly; Open_creat; Open_excl; Open_binary ]
-             0o664
+        ( match prefix with
+        | "/dev/null" -> open_out prefix
+        | _ ->
+            prefix ^ fn
+            |> open_out_gen
+                 [ Open_wronly; Open_creat; Open_excl; Open_binary ]
+                 0o664 )
         |> copy_channel boundary ic |> close_out
         (* leave cleanup after exceptions to the OS *)
       in
