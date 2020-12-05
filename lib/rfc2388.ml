@@ -46,7 +46,7 @@ let copy_channel boundary ic oc =
         | false ->
             output_substring oc boundary 0 back;
             ch |> output_char oc;
-            cp 0
+            cp (match ch = boundary.[0] with true -> 1 | false -> 0)
         | true -> cp (1 + back) )
   in
   cp 0
