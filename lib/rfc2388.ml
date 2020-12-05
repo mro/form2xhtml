@@ -16,16 +16,13 @@ module P = struct
 
   let cr = char '\r'
 
-  let boundary' = start *> str "--" *> pcre "[^ \r\n]+" <* cr *> stop
-
-  let boundary = compile boundary'
-
-  (* right values are tokens, still *)
+  (* values are tokens, still *)
   let kv =
     conv
-      (fun (a, b) -> (a, b))
-      (fun (a, b) -> (a, b))
-      (pcre "[^= \r\n]+" <&> char '=' *> quot *> pcre "[^\"\r\n]+" <* quot)
+      (function a, `Left x -> (a, x) | a, `Right x -> (a, x))
+      (function a, x -> (a, `Left x) (* prefer quoted form *))
+      ( pcre "[^= \r\n]+"
+      <&> char '=' *> (quot *> pcre "[^\"\r\n]+" <* quot <|> pcre "[^\r\n]+") )
 
   let kv_line =
     compile
@@ -35,13 +32,11 @@ module P = struct
       <* cr <* stop )
 end
 
-let parse_boundary str = str |> Tyre.exec P.boundary
-
 (** a tuple, followed by a list of tuples *)
 let parse_line str = str |> Tyre.exec P.kv_line
 
 let copy_channel boundary ic oc =
-  let blen = String.length boundary in
+  let blen = boundary |> String.length in
   let rec cp back =
     match blen = back with
     | true -> oc
@@ -56,36 +51,51 @@ let copy_channel boundary ic oc =
   in
   cp 0
 
-type meta = { name : string; filename : string option; mime : string option }
+type meta = {
+  name : string;
+  filename : string option;
+  mime : string option;
+  boundary : string option;
+}
 
 let process ic prefix =
-  match ic |> input_line |> parse_boundary with
-  | Error _ -> Printf.eprintf "error: Not a boundary"
-  | Ok bou' ->
-      let boundary = "\r\n" ^ "--" ^ bou' in
-      let rec parse_header r' =
-        match r' with
-        | Error _ ->
-            Printf.eprintf "error: cannot parse part header";
-            r'
-        | Ok r -> (
-            match ic |> input_line |> parse_line with
-            | Error (`NoMatch (_, "\r")) ->
-                (* despite the scary name this is successful termination *)
-                Ok r
-            | Ok (("Content-Disposition", "form-data"), [ ("name", n) ]) ->
-                parse_header (Ok { r with name = n })
-            | Ok
-                ( ("Content-Disposition", "form-data"),
-                  [ ("name", n); ("filename", fn) ] ) ->
-                parse_header (Ok { r with name = n; filename = Some fn })
-            | Ok (("Content-Type", mim), []) ->
-                parse_header (Ok { r with mime = Some mim })
-            | _ ->
-                Printf.eprintf "error: cannot parse part header line";
-                r' )
-      in
-      let copy_file fn =
+  let rec parse_header r' =
+    match r' with
+    | Error _ ->
+        Printf.eprintf "error: cannot parse part header\n";
+        r'
+    | Ok r -> (
+        let lin = ic |> input_line in
+        match lin |> parse_line with
+        | Error (`NoMatch (_, "\r")) ->
+            (* despite the scary name this is successful termination *)
+            Ok r
+        | Error e ->
+            Printf.eprintf "error: cannot parse part header line '%s'\n" lin;
+            Error e
+        | Ok (("Content-Disposition", "form-data"), [ ("name", n) ]) ->
+            parse_header (Ok { r with name = n })
+        | Ok
+            ( ("Content-Disposition", "form-data"),
+              [ ("name", n); ("filename", fn) ] ) ->
+            parse_header (Ok { r with name = n; filename = Some fn })
+        | Ok (("Content-Type", mim), [ ("boundary", bo) ]) ->
+            parse_header (Ok { r with mime = Some mim; boundary = Some bo })
+        | Ok (("Content-Type", mim), []) ->
+            parse_header (Ok { r with mime = Some mim })
+        | Ok _ ->
+            (* Printf.eprintf "warning: ignored header '%s'\n" f; *)
+            parse_header r' )
+  and empt = { name = ""; filename = None; mime = None; boundary = None } in
+  match Ok empt |> parse_header with
+  | Ok
+      {
+        name = "";
+        filename = None;
+        mime = Some "multipart/form-data";
+        boundary = Some bou';
+      } ->
+      let copy_file bound ic fn =
         ( match prefix with
         | "/dev/null" -> open_out prefix
         | _ ->
@@ -93,30 +103,30 @@ let process ic prefix =
             |> open_out_gen
                  [ Open_wronly; Open_creat; Open_excl; Open_binary ]
                  0o664 )
-        |> copy_channel boundary ic |> close_out
-        (* leave cleanup after exceptions to the OS *)
-      in
+        |> copy_channel bound ic |> close_out
+      (* leave cleanup after exceptions to the OS *)
+      and boundry = "\r\n" ^ "--" ^ bou' in
       let rec scan_part depth =
-        ( match
-            parse_header (Ok { name = ""; filename = None; mime = None })
-          with
-        | Ok { name = n; filename = Some fn; mime = Some mim } ->
-            Printf.printf
-              "  <input type=\"file\" mime=\"%s\" name=\"%s\" value=\"%s\"/>\n"
-              mim n fn;
-            copy_file fn
-        | Ok { name = n; filename = None; mime = None } ->
+        ( match parse_header (Ok empt) with
+        | Ok { name = n; filename = None; mime = _; boundary = _ } ->
             (* CDATA isn't a solution for escaping but rather a mitigation.
              * Works until the payload contains the literal ']]>' *)
             Printf.printf "  <textarea name=\"%s\"><![CDATA[" n;
-            let _ = copy_channel boundary ic stdout in
+            let _ = copy_channel boundry ic stdout in
             Printf.printf "]]></textarea>\n"
-        | _ -> Printf.eprintf "error: unexpected part header" );
+        | Ok { name = n; filename = Some fn; mime = Some mim; boundary = _ } ->
+            Printf.printf
+              "  <input type=\"file\" mime=\"%s\" name=\"%s\" value=\"%s\"/>\n"
+              mim n fn;
+            copy_file boundry ic fn
+        | _ -> Printf.eprintf "error: unexpected part header\n" );
         match ic |> input_line with
         | "\r" -> scan_part (depth + 1)
         | "--\r" -> ()
-        | _ -> Printf.eprintf "error: unexpected part gutter"
+        | _ -> Printf.eprintf "error: unexpected part gutter\n"
       in
+      let _ = ic |> input_line (* TODO check if boundary *) in
       Printf.printf "<form>\n";
       scan_part 0;
       Printf.printf "</form>\n"
+  | _ -> Printf.eprintf "error: Not a boundary\n"
