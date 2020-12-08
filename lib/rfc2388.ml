@@ -16,13 +16,13 @@ module P = struct
 
   let cr = char '\r'
 
-  (* values are tokens, still *)
-  let kv =
+  let valu =
     conv
-      (function a, `Left x -> (a, x) | a, `Right x -> (a, x))
-      (function a, x -> (a, `Left x) (* prefer quoted form *))
-      ( pcre "[^= \r\n]+"
-      <&> char '=' *> (quot *> pcre "[^\"\r\n]+" <* quot <|> pcre "[^\r\n]+") )
+      (function `Left x -> x | `Right x -> x)
+      (function x -> `Left x (* prefer quoted form *))
+      (quot *> pcre "[^\"\r\n]*" <* quot <|> pcre "[^\r\n]+")
+
+  let kv = pcre "[^= \r\n]+" <&> char '=' *> valu
 
   let kv_line =
     compile
