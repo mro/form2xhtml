@@ -40,14 +40,15 @@ let copy_channel boundary ic oc =
   let rec cp back =
     match blen = back with
     | true -> oc
-    | false -> (
-        let ch = ic |> input_char in
-        match ch = boundary.[back] with
-        | false ->
-            output_substring oc boundary 0 back;
-            ch |> output_char oc;
-            cp (match ch = boundary.[0] with true -> 1 | false -> 0)
-        | true -> cp (1 + back) )
+    | false ->
+        cp
+          (let ch = ic |> input_char in
+           match ch = boundary.[back] with
+           | false -> (
+               output_substring oc boundary 0 back;
+               ch |> output_char oc;
+               match ch = boundary.[0] with true -> 1 | false -> 0 )
+           | true -> 1 + back)
   in
   cp 0
 
@@ -60,32 +61,28 @@ type meta = {
 
 let process ic prefix =
   let rec parse_header r' =
-    match r' with
-    | Error _ ->
-        Printf.eprintf "error: cannot parse part header\n";
-        r'
-    | Ok r -> (
-        let lin = ic |> input_line in
-        match lin |> parse_line with
-        | Error (`NoMatch (_, "\r")) ->
-            (* despite the scary name this is successful termination *)
-            Ok r
-        | Error e ->
-            Printf.eprintf "error: cannot parse part header line '%s'\n" lin;
-            Error e
-        | Ok (("Content-Disposition", "form-data"), [ ("name", n) ]) ->
-            parse_header (Ok { r with name = n })
-        | Ok
-            ( ("Content-Disposition", "form-data"),
-              [ ("name", n); ("filename", fn) ] ) ->
-            parse_header (Ok { r with name = n; filename = Some fn })
-        | Ok (("Content-Type", mim), [ ("boundary", bo) ]) ->
-            parse_header (Ok { r with mime = Some mim; boundary = Some bo })
-        | Ok (("Content-Type", mim), []) ->
-            parse_header (Ok { r with mime = Some mim })
-        | Ok _ ->
-            (* Printf.eprintf "warning: ignored header '%s'\n" f; *)
-            parse_header r' )
+    Result.bind r' (function r ->
+        (let lin = ic |> input_line in
+         match lin |> parse_line with
+         | Error (`NoMatch (_, "\r")) ->
+             (* despite the scary name this is successful termination *)
+             Ok r
+         | Error e ->
+             Printf.eprintf "error: cannot parse part header line '%s'\n" lin;
+             Error e
+         | Ok (("Content-Disposition", "form-data"), [ ("name", n) ]) ->
+             parse_header (Ok { r with name = n })
+         | Ok
+             ( ("Content-Disposition", "form-data"),
+               [ ("name", n); ("filename", fn) ] ) ->
+             parse_header (Ok { r with name = n; filename = Some fn })
+         | Ok (("Content-Type", mim), [ ("boundary", bo) ]) ->
+             parse_header (Ok { r with mime = Some mim; boundary = Some bo })
+         | Ok (("Content-Type", mim), []) ->
+             parse_header (Ok { r with mime = Some mim })
+         | Ok _ ->
+             (* Printf.eprintf "warning: ignored header '%s'\n" f; *)
+             parse_header r'))
   and empt = { name = ""; filename = None; mime = None; boundary = None } in
   match Ok empt |> parse_header with
   | Ok

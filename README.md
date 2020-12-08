@@ -15,6 +15,7 @@ See
 $ form2xml -h
 $ form2xml -v
 $ form2xml [enclosure prefix] < source.dump > target.xml
+$ form2xml /dev/null < source.dump > target.xml
 ```
 
 ## Design Goals

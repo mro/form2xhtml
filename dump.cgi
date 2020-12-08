@@ -10,10 +10,14 @@ cd "$(dirname "${0}")/../../../dumps" || exit 1
 [ "${CONTENT_LENGTH}" -gt 0 ] || exit 2
 
 dst="$(date +%FT%H%M%S).post"
-printf "Content-Type: ${CONTENT_TYPE}\r\n" > "${dst}~"
-printf "Content-Length: ${CONTENT_LENGTH}\r\n" >> "${dst}~"
-printf "\r\n" >> "${dst}~"
-cat >> "${dst}~" \
+{
+  printf "%s: %s\r\n" "Content-Type" "${CONTENT_TYPE}"
+  printf "%s: %s\r\n" "Content-Length" "${CONTENT_LENGTH}"
+  printf "%s: \"%s\"\r\n" "User-Agent" "${HTTP_USER_AGENT}"
+  printf "%s: %s\r\n" "Remote-Address" "${REMOTE_ADDR}"
+  printf "\r\n"
+  cat
+} > "${dst}~" \
  && chmod a-wx "${dst}~" \
  && mv "${dst}~" "${dst}"
 
