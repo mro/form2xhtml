@@ -1,21 +1,20 @@
 
 # ✂️ form2xml
 
-Convert HTTP multipart/form-data RFC 2388 POST dumps into xml for e.g. Atom RFC 4287.
+Convert [RFC2388](https://tools.ietf.org/html/rfc2388)
+multipart/[form-data](https://ec.haxx.se/http/http-multipart) dumps to a minimal
+xhtml form containing the same data as the form before submission.
 
-See
-
-* https://tools.ietf.org/html/rfc2388
-* https://ec.haxx.se/http/http-multipart
-* https://tools.ietf.org/html/rfc4287
+Comes with a CGI to catch such dumps and an xslt trafo to [Atom
+RFC4287](https://tools.ietf.org/html/rfc4287).
 
 ## Synopsis
 
 ```sh
 $ form2xml -h
 $ form2xml -v
-$ form2xml [enclosure prefix] < source.dump > target.xml
-$ form2xml /dev/null < source.dump > target.xml
+$ form2xml [enclosure prefix] < source.dump > target.xhtml
+$ form2xml /dev/null < source.dump > target.xhtml
 ```
 
 ## Design Goals

@@ -31,12 +31,12 @@ $ form2xml [enclosure prefix] &lt; source.dump &gt; target.xml
         <location rdf:resource="https://code.mro.name/mro/form2xml.git"/>
       </GitRepository>
     </repository>
-<!--
     <repository>
       <GitRepository>
-        <browse rdf:resource="https://github.com/mro/form2xml"/>
+        <browse rdf:resource="https://github.com/mro/form2xhtml"/>
       </GitRepository>
     </repository>
+<!--
     <repository>
       <GitRepository>
         <browse rdf:resource="https://gitlab.com/mro/form2xml"/>
