@@ -11,7 +11,7 @@ let print_version () =
 
 let print_help () =
   let msg =
-    "Convert HTTP multipart/form-data RFC 2388 POST dumps into xml for e.g. \
+    "Convert a HTTP multipart/form-data RFC 2388 POST dump into a xhtml form and e.g. \
      Atom RFC 4287.\n\n\
      See\n\n\
      * https://tools.ietf.org/html/rfc2388\n\
@@ -19,9 +19,9 @@ let print_help () =
      * https://tools.ietf.org/html/rfc4287\n\n\
      SYNOPSIS\n\n\
      $ form2xml -h\n\
-     $ form2xml -v\n\
-     $ form2xml [enclosure prefix] < source.dump > target.xml\n\
-     $ form2xml /dev/null < source.dump > target.xml\n\n"
+     $ form2xml -V\n\
+     $ form2xml [enclosure prefix] < source.dump > target.html\n\
+     $ form2xml /dev/null < source.dump > target.html\n\n"
   in
   Printf.printf "%s\n" msg;
   0
@@ -29,7 +29,7 @@ let print_help () =
 let () =
   ( match Sys.argv |> Array.to_list |> List.tl with
   | [ "-h" ] | [ "--help" ] -> print_help ()
-  | [ "-v" ] | [ "--version" ] -> print_version ()
+  | [ "-V" ] | [ "--version" ] -> print_version ()
   | [ pre ] ->
       pre |> Lib.Rfc2388.process stdin;
       0

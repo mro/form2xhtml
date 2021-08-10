@@ -1,11 +1,24 @@
 #!/bin/sh
 # dump HTTP post requests. Nice for off-site, static website feedback.
 #
-# Use e.g. https://mro.name/form2xml to process them.
+# Use e.g. https://mro.name/form2xhtml to process them.
 
 # where do you want to dump to?
-cd "/var/spool/form2xml/dumps/new/" || exit 1
-cd "../tmp/" || exit 1
+cd "/var/spool/form2xml/dumps/" || exit 1
+# ensure existing maildir structure
+cd "tmp" || exit 1
+cd "../new" || exit 1
+cd ".." || exit 1
+
+if [ "$(ls new/*.post | wc -l)" -gt 100 ] ; then
+  cat <<EndOfMessage
+Status: 302 Found
+Location: overflow.html
+
+Overflowing, traffic jam straight up ahead!
+EndOfMessage
+  exit 2
+fi
 
 # https://stackoverflow.com/a/52363117
 [ "${CONTENT_LENGTH}" -gt 0 ] || exit 2
@@ -18,9 +31,9 @@ dst="$(date +%FT%H%M%S).post"
   printf "%s: %s\r\n" "Remote-Address" "${REMOTE_ADDR}"
   printf "\r\n"
   cat
-} > "./${dst}" \
- && chmod a-wx "./${dst}" \
- && mv "./${dst}" "../new/${dst}"
+} > "tmp/${dst}" \
+ && chmod a-wx "tmp/${dst}" \
+ && mv "tmp/${dst}" "new/${dst}"
 
 cat <<EndOfMessage
 Status: 302 Found
