@@ -22,7 +22,7 @@ See
 Synopsis
 
 $ form2xml -h
-$ form2xml -v
+$ form2xml -V
 $ form2xml [enclosure prefix] &lt; source.dump &gt; target.xml
     </description>
     <repository>

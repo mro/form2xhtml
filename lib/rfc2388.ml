@@ -26,10 +26,10 @@ module P = struct
 
   let kv_line =
     compile
-      ( start *> pcre "[^: \r\n]+"
+      (start *> pcre "[^: \r\n]+"
       <&> str ": " *> pcre "[^; \r\n]+"
       <&> list (str "; " *> kv)
-      <* cr <* stop )
+      <* cr <* stop)
 end
 
 (** a tuple, followed by a list of tuples *)
@@ -50,7 +50,7 @@ let copy_channel boundary ic oc =
                | false ->
                    ch |> output_char oc;
                    0
-               | true -> 1 )
+               | true -> 1)
            | true -> 1 + back)
   in
   cp 0
@@ -62,7 +62,7 @@ type meta = {
   boundary : string option;
 }
 
-let process ic prefix =
+let process ic oc prefix =
   let rec parse_header r' =
     Result.bind r' (function r ->
         (let lin = ic |> input_line in
@@ -96,37 +96,37 @@ let process ic prefix =
         boundary = Some bou';
       } ->
       let copy_file bound ic fn =
-        ( match prefix with
+        (match prefix with
         | "/dev/null" -> open_out prefix
         | _ ->
             prefix ^ fn
             |> open_out_gen
                  [ Open_wronly; Open_creat; Open_excl; Open_binary ]
-                 0o664 )
+                 0o664)
         |> copy_channel bound ic |> close_out
       (* leave cleanup after exceptions to the OS *)
       and boundry = "\r\n" ^ "--" ^ bou' in
       let rec scan_part depth =
-        ( match parse_header (Ok empt) with
+        (match parse_header (Ok empt) with
         | Ok { name = n; filename = None; mime = _; boundary = _ } ->
             (* CDATA isn't a solution for escaping but rather a mitigation.
              * Works until the payload contains the literal ']]>' *)
-            Printf.printf "  <textarea name=\"%s\"><![CDATA[" n;
+            Printf.fprintf oc "  <textarea name=\"%s\"><![CDATA[" n;
             let _ = copy_channel boundry ic stdout in
-            Printf.printf "]]></textarea>\n"
+            Printf.fprintf oc "]]></textarea>\n"
         | Ok { name = n; filename = Some fn; mime = Some mim; boundary = _ } ->
-            Printf.printf
+            Printf.fprintf oc
               "  <input type=\"file\" mime=\"%s\" name=\"%s\" value=\"%s\"/>\n"
               mim n fn;
             copy_file boundry ic fn
-        | _ -> Printf.eprintf "error: unexpected part header\n" );
+        | _ -> Printf.eprintf "error: unexpected part header\n");
         match ic |> input_line with
         | "\r" -> scan_part (depth + 1)
         | "--\r" -> ()
         | _ -> Printf.eprintf "error: unexpected part gutter\n"
       in
       let _ = ic |> input_line (* TODO check if boundary *) in
-      Printf.printf "<form>\n";
+      Printf.fprintf oc "<form>\n";
       scan_part 0;
-      Printf.printf "</form>\n"
+      Printf.fprintf oc "</form>\n"
   | _ -> Printf.eprintf "error: Not a boundary\n"
