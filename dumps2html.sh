@@ -1,5 +1,5 @@
 #!/bin/sh
-form2xml --help >/dev/null || { echo "Install https://mro.name/form2xhtml" 1>&2 && exit 1;  }
+form2xhtml --help >/dev/null || { echo "Install https://mro.name/form2xhtml" 1>&2 && exit 1;  }
 
 [ -r "${1}" ] || {
 cat 1>&2 <<EOF
@@ -15,7 +15,7 @@ do
   shift
   dst="$(basename "${src}").html"
 
-  form2xml /dev/null < "${src}" | xmllint --format --nocdata --nonet --encode utf8 - > "${dst}"
+  form2xhtml /dev/null < "${src}" | xmllint --format --nocdata --nonet --encode utf8 - > "${dst}"
   echo "${dst}"
 done
 

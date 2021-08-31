@@ -1,6 +1,6 @@
 ; https://stackoverflow.com/a/53325230/349514
 (executable
-  (name form2xml)
+  (name form2xhtml)
   (libraries Lib)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

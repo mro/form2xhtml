@@ -1,5 +1,5 @@
 
-# ✂️ form2xml
+# ✂️ form2xhtml
 
 Convert [RFC2388](https://tools.ietf.org/html/rfc2388)
 multipart/[form-data](https://ec.haxx.se/http/http-multipart) dumps to a minimal
@@ -11,10 +11,11 @@ RFC4287](https://tools.ietf.org/html/rfc4287).
 ## Synopsis
 
 ```sh
-$ form2xml -h
-$ form2xml -V
-$ form2xml [enclosure prefix] < source.dump > target.xhtml
-$ form2xml /dev/null < source.dump > target.xhtml
+$ form2htxml -h
+$ form2xhtml -V
+$ form2xhtml [enclosure prefix] < source.dump > target.xhtml
+$ form2xhtml ./ < source.dump > target.xhtml
+$ form2xhtml /dev/null < source.dump > target.xhtml
 ```
 
 ## Design Goals

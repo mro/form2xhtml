@@ -7,7 +7,7 @@
 build:
 	@echo "let git_sha = \""`git rev-parse --short HEAD`"\"" > lib/version.ml
 	@echo "let date = \""`date +'%FT%T%z'`"\""              >> lib/version.ml
-	dune build bin/form2xml.exe
+	dune build bin/form2xhtml.exe
 
 all: build
 

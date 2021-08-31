@@ -2,11 +2,11 @@
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns="http://usefulinc.com/ns/doap#">
   <Project>
-    <name>form2xml</name>
+    <name>form2xhtml</name>
     <shortdesc xml:lang="en">
 🐫 ✂️ extract multipart/form-data dumps (RFC2388) to html (xml).
     </shortdesc>
-    <homepage rdf:resource="https://mro.name/form2xml"/>
+    <homepage rdf:resource="https://mro.name/form2xhtml"/>
     <programming-language>OCaml</programming-language>
     <bug-database rdf:resource="https://code.mro.name/mro/form2xml/issues"/>
     <maintainer rdf:resource="https://code.mro.name/mro"/>
@@ -21,9 +21,9 @@ See
 
 Synopsis
 
-$ form2xml -h
-$ form2xml -V
-$ form2xml [enclosure prefix] &lt; source.dump &gt; target.xml
+$ form2xhtml -h
+$ form2xhtml -V
+$ form2xhtml [enclosure prefix] &lt; source.dump &gt; target.xml
     </description>
     <repository>
       <GitRepository>
@@ -39,12 +39,12 @@ $ form2xml [enclosure prefix] &lt; source.dump &gt; target.xml
 <!--
     <repository>
       <GitRepository>
-        <browse rdf:resource="https://gitlab.com/mro/form2xml"/>
+        <browse rdf:resource="https://gitlab.com/mro/form2xhtml"/>
       </GitRepository>
     </repository>
     <repository>
       <GitRepository>
-        <browse rdf:resource="https://notabug.org/mro/form2xml"/>
+        <browse rdf:resource="https://notabug.org/mro/form2xhtml"/>
       </GitRepository>
     </repository>
 -->
@@ -56,7 +56,7 @@ $ form2xml [enclosure prefix] &lt; source.dump &gt; target.xml
 <!--
     <repository>
       <GitRepository>
-        <browse rdf:resource="https://repo.or.cz/form2xml.git"/>
+        <browse rdf:resource="https://repo.or.cz/form2xhtml.git"/>
       </GitRepository>
     </repository>
 -->
