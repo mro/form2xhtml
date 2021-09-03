@@ -4,24 +4,32 @@
 # Use e.g. https://mro.name/form2xhtml to process them.
 
 # where do you want to dump to?
-cd "/var/spool/form2xml/dumps/" || exit 1
+cd "/var/spool/form2xhtml/dumps/" || exit 500
 # ensure existing maildir structure
-cd "tmp" || exit 1
-cd "../new" || exit 1
-cd ".." || exit 1
-
-if [ "$(ls new/*.post | wc -l)" -gt 100 ] ; then
-  cat <<EndOfMessage
-Status: 302 Found
-Location: overflow.html
-
-Overflowing, traffic jam straight up ahead!
-EndOfMessage
-  exit 2
-fi
+cd "tmp" || exit 500
+cd "../new" || exit 500
+cd ".." || exit 500
 
 # https://stackoverflow.com/a/52363117
 [ "${CONTENT_LENGTH}" -gt 0 ] || exit 2
+
+if [ "${CONTENT_LENGTH}" -gt 10485760 ] ; then
+  cat <<EndOfMessage
+Status: 400 Bad Request
+
+Size too large
+EndOfMessage
+  exit 0
+fi
+
+if [ "$(ls new/*.post | wc -l)" -gt 100 ] ; then
+  cat <<EndOfMessage
+Status: 503 Service Unavailable
+
+Overflowing, traffic jam straight up ahead!
+EndOfMessage
+  exit 0
+fi
 
 dst="$(date +%FT%H%M%S).post"
 {
