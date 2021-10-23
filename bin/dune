@@ -1,8 +1,10 @@
+;; https://discuss.ocaml.org/t/dune-how-to-link-statically-on-linux-not-on-others/8537/4?u=mro
+(rule (with-stdout-to link_flags.sexp (run sh %{dep:gen_link_flags.sh})))
+
 ; https://stackoverflow.com/a/53325230/349514
 (executable
   (name form2xhtml)
   (libraries Lib)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Prepare for static linking
 ;
@@ -32,5 +34,5 @@
 ; $ make clean build
 ; $ file _build/default/bin/*.exe 
 ; _build/default/bin/meta.exe: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, not stripped
-;  (link_flags (-ccopt "-static"))
+  (link_flags (:include link_flags.sexp))
 )
