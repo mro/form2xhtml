@@ -13,7 +13,7 @@ RFC4287](https://tools.ietf.org/html/rfc4287).
 ```sh
 $ form2htxml -h
 $ form2xhtml -V
-$ form2xhtml [enclosure prefix] < source.dump > target.xhtml
+$ form2xhtml enclosure_prefix < source.dump > target.xhtml
 $ form2xhtml ./ < source.dump > target.xhtml
 $ form2xhtml /dev/null < source.dump > target.xhtml
 ```

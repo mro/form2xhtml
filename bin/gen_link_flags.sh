@@ -7,7 +7,7 @@ case "$(uname -s)" in
     echo '()'
     ;;
   *)
-    echo '(-ccopt "-static")'
+    echo '(-ccopt -static)'
     ;;
 esac
 

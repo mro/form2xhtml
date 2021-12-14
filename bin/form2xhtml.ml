@@ -19,7 +19,7 @@ let print_help oc =
      SYNOPSIS\n\n\
      $ form2xhtml -h\n\
      $ form2xhtml -V\n\
-     $ form2xhtml [enclosure prefix] < source.dump > target.html\n\
+     $ form2xhtml enclosure_prefix < source.dump > target.html\n\
      $ form2xhtml ./ < source.dump > target.html\n\
      $ form2xhtml /dev/null < source.dump > target.html\n";
   0
