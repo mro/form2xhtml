@@ -3,10 +3,10 @@
 
 Convert [RFC2388](https://tools.ietf.org/html/rfc2388)
 multipart/[form-data](https://ec.haxx.se/http/http-multipart) dumps to a minimal
-xhtml form containing the same data as the form before submission.
+xhtml form containing the same data as the webform at submission.
 
-Comes with a CGI to catch such dumps and an xslt trafo to [Atom
-RFC4287](https://tools.ietf.org/html/rfc4287).
+Comes with a `dump.cgi` in `./contrib/` to catch such dumps and an xslt trafo to [Atom
+RFC4287](https://tools.ietf.org/html/rfc4287) in case.
 
 ## Synopsis
 
@@ -14,6 +14,7 @@ RFC4287](https://tools.ietf.org/html/rfc4287).
 $ form2htxml -h
 $ form2xhtml -V
 $ form2xhtml enclosure_prefix < source.dump > target.xhtml
+
 $ form2xhtml ./ < source.dump > target.xhtml
 $ form2xhtml /dev/null < source.dump > target.xhtml
 ```
